@@ -1,44 +1,49 @@
-from flask import Flask, request, render_template
 import pickle
+import numpy as np
+import tkinter as tk
+from tkinter import messagebox
+import warnings
+warnings.filterwarnings("ignore")
 
-app = Flask(__name__)
+# Load the trained model
+model = pickle.load(open('Random Forest', 'rb'))
 
-# Load your trained model
-model = pickle.load(open('XGBoost', 'rb'))
+# Load the fitted scaler
+scaler = pickle.load(open('scaler','rb'))
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# Define the input field names
+input_field_names = ['Radius Mean', 'Texture Mean', 'Perimeter Mean', 'Area Mean',
+                     'Smoothness Mean', 'Compactness Mean', 'Concavity Mean',
+                     'Concave Points Mean', 'Symmetry Mean', 'Fractal Dimension Mean']
 
-@app.route('/predict', methods=['POST'])
+# Create the main window
+window = tk.Tk()
+window.title("Cancer Prediction")
+
+# Create input fields
+input_fields = []
+for name in input_field_names:
+    tk.Label(window, text=name).grid(row=input_field_names.index(name), column=0)
+    entry = tk.Entry(window)
+    entry.grid(row=input_field_names.index(name), column=1)
+    input_fields.append(entry)
+
 def predict():
-    # Access form data
-    radius_mean = request.form['radius_mean']
-    texture_mean = request.form['texture_mean']
-    perimeter_mean = request.form['perimeter_mean']
-    area_mean = request.form['area_mean']
-    smoothness_mean = request.form['smoothness_mean']
-    compactness_mean = request.form['compactness_mean']
-    concavity_mean = request.form['concavity_mean']
-    concave_points_mean = request.form['concave points_mean']
-    symmetry_mean = request.form['symmetry_mean']
-    fractal_dimension_mean = request.form['fractal_dimension_mean']
-    radius_se = request.form['radius_se']
-    # ... continue for other columns
+    try:
+        data = [float(field.get()) if field.get() else np.nan for field in input_fields]
+        if np.nan not in data:
+            data = np.array(data).reshape(1, -1)
+            data_scaled = scaler.transform(data)
+            prediction = model.predict(data_scaled)
+            message = "Cancer: {}".format("Benign" if prediction[0] == 1 else "Malignant")
+            messagebox.showinfo("Prediction", message)
+        else:
+            messagebox.showerror("Error", "Please fill in all the input fields with numeric values")
+    except ValueError:
+        messagebox.showerror("Error", "Invalid input. Please fill in all the input fields with numeric values")
 
-    # Convert input to a format suitable for your model
-    input_data = [[float(radius_mean), float(texture_mean), float(perimeter_mean),float(area_mean),float(smoothness_mean),float(compactness_mean),float(concavity_mean),float(concave_points_mean),float(symmetry_mean),float(fractal_dimension_mean),float(radius_se)]]
 
-    # Make prediction
-    prediction = model.predict(input_data)
+tk.Button(window, text="Predict", command=predict).grid(row=len(input_field_names), columnspan=2)
 
-    # Convert the prediction to a readable format
-    if prediction == 0:
-        result = 'No cancer detected'
-    else:
-        result = 'Cancer detected'
-
-    return result
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# Run the main loop
+window.mainloop()
