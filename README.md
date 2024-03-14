@@ -4,7 +4,7 @@ This repository contains a machine learning model for predicting the presence of
 
 ## Data Features 📊
 
-The data consists of 569 samples with 30 features each. The features are real-valued and represent characteristics of the breast cancer cells. The target variable is binary, indicating the presence (1) or absence (0) of breast cancer.
+The data consists of 569 samples with 30 features each. The features are real-valued and represent characteristics of the breast cancer cells. The target variable is binary, indicating the Malignant (1 : presence) or Benign (0 : absence) of breast cancer.
 
 The features are:
 
