@@ -52,9 +52,8 @@ Before training the model, the data was preprocessed using the following steps:
 
 EDA was performed using the following techniques:
 
-1. Descriptive statistics: Basic statistics like mean, median, mode, and standard deviation were calculated for each feature.
-2. Correlation matrix: A correlation matrix was created to visualize the relationships between the features.
-3. Visualization: Histograms and box plots were used to visualize the distribution of the features.
+1. Correlation matrix: A correlation matrix was created to visualize the relationships between the features.
+2. Visualization: Histograms and box plots were used to visualize the distribution of the features.
 
 ## Model Training 📊
 
